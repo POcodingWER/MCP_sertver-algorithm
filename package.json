@@ -1,5 +1,5 @@
 {
-  "name": "mcp_sertver-algorithm",
+  "name": "mcp_server-algorithm",
   "version": "1.0.0",
   "description": "알고리즘 MCP를 구현해보자",
   "main": "dist/index.js",
