@@ -1,0 +1,14 @@
+{
+  "include": ["src/**/*", "locales"],
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@*": ["*"]
+    },
+    "typeRoots": ["node_modules/@types", "src/@types"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
