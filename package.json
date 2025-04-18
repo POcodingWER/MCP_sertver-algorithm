@@ -4,9 +4,10 @@
   "description": "알고리즘 MCP를 구현해보자",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --skipLibCheck --declaration false",
     "start": "node dist/index.js",
     "dev": "nodemon --exec ts-node src/index.ts --ext ts,json",
+    "sse": "nodemon --exec ts-node src/sse.ts",
     "test": "jest"
   },
   "keywords": [],
