@@ -1,4 +1,4 @@
-import LinkedListNode from "./node";
+import LinkedListNode from "./LinkedListNode";
 import Comparator from "../../utils";
 
 export default class LinkedList<T> {

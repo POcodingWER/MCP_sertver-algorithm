@@ -1,5 +1,5 @@
 import { z } from "zod";
-import LinkedList from "../algorithm/linked_list";
+import LinkedList from "../algorithm/LinkedList/LinkedList";
 
 // 도구 이름 열거형
 export enum ToolName {

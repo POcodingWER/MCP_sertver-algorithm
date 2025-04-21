@@ -1,4 +1,4 @@
-import LinkedList from "../index";
+import LinkedList from "../LinkedList";
 
 describe("LinkedList", () => {
   it("빈 연결 리스트를 생성해야 합니다", () => {

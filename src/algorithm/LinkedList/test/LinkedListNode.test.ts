@@ -1,4 +1,4 @@
-import LinkedListNode from "../node";
+import LinkedListNode from "../LinkedListNode";
 
 describe("LinkedListNode", () => {
   it("값을 가진 리스트 노드를 생성해야 합니다", () => {
