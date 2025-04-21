@@ -54,6 +54,19 @@ export function createServer() {
           '6) toArrayReverse: 역순 전체 리스트 조회 (예: operation: "toArrayReverse", listId: "list_123")',
         inputSchema: zodToJsonSchema(ToolSchemas[ToolName.DOUBLY_LINKED_LIST]),
       },
+      {
+        name: ToolName.QUEUE,
+        description:
+          "큐 자료구조를 관리하고 조작합니다." +
+          "사용법:" +
+          '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+          "2) 얻은 listId를 이후 모든 작업에 사용" +
+          '3) enqueue/dequeue: 큐에 값 추가/제거 (예: operation: "enqueue", listId: "queue_123", value: "some value")' +
+          '4) peek: 큐의 맨 앞 값 조회 (예: operation: "peek", listId: "queue_123")' +
+          '5) isEmpty: 큐가 비어있는지 확인 (예: operation: "isEmpty", listId: "queue_123")' +
+          '6) toString: 큐의 내용 문자열로 반환 (예: operation: "toString", listId: "queue_123")',
+        inputSchema: zodToJsonSchema(ToolSchemas[ToolName.QUEUE]),
+      },
     ];
 
     return { tools };

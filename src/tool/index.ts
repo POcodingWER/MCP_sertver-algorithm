@@ -1,12 +1,14 @@
 import { z } from "zod";
 import LinkedList from "../algorithm/LinkedList/LinkedList";
 import DoublyLinkedList from "../algorithm/DoublyLinkedList/DoublyLinkedList";
+import Queue from "../algorithm/Queue/Queue";
 
 // 도구 이름 열거형
 export enum ToolName {
   ECHO = "echo",
   LINKED_LIST = "linked-list",
   DOUBLY_LINKED_LIST = "doubly-linked-list",
+  QUEUE = "queue",
 }
 
 // 도구 스키마 정의
@@ -51,15 +53,24 @@ export const ToolSchemas = {
       .describe("작업에 사용할 값 (append, prepend, delete, find 작업에 필수)"),
     listId: z.string(),
   }),
+  [ToolName.QUEUE]: z.object({
+    operation: z
+      .enum(["create", "isEmpty", "peek", "enqueue", "dequeue", "toString"])
+      .describe(
+        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
+      ),
+    value: z
+      .string()
+      .optional()
+      .describe("작업에 사용할 값 (enqueue, dequeue, peek 작업에 필수)"),
+    listId: z.string(),
+  }),
 };
 
 // 연결 리스트를 저장하는 인메모리 저장소
 const listStore: Map<string, LinkedList<any>> = new Map();
 const doublyListStore: Map<string, DoublyLinkedList<any>> = new Map();
-
-const generateListId = (): string => {
-  return `list_${Math.floor(Math.random() * 1000)}`;
-};
+const queueStore: Map<string, Queue<any>> = new Map();
 
 const validateValueParam = (value: unknown, operation: string): void => {
   if (value === undefined) {
@@ -112,7 +123,7 @@ export const ToolHandlers = {
 
     switch (operation) {
       case "create": {
-        const newListId = generateListId();
+        const newListId = `list_${Math.floor(Math.random() * 1000)}`;
         const newList = new LinkedList();
         listStore.set(newListId, newList);
 
@@ -197,7 +208,7 @@ export const ToolHandlers = {
 
     switch (operation) {
       case "create": {
-        const newListId = generateListId();
+        const newListId = `doubly_list_${Math.floor(Math.random() * 1000)}`;
         const newList = new DoublyLinkedList();
         doublyListStore.set(newListId, newList);
 
@@ -304,6 +315,78 @@ export const ToolHandlers = {
       default:
         throw new Error(
           `지원하지 않는 작업: ${operation}. 가능한 작업: create, append, prepend, delete, find, toArray, toArrayReverse`
+        );
+    }
+  },
+  [ToolName.QUEUE]: async (args: Record<string, unknown> | undefined) => {
+    const validatedArgs = ToolSchemas[ToolName.QUEUE].parse(args);
+    const { operation, value, listId } = validatedArgs;
+
+    switch (operation) {
+      case "create": {
+        const newListId = `queue_${Math.floor(Math.random() * 1000)}`;
+        const newQueue = new Queue();
+        queueStore.set(newListId, newQueue);
+
+        return createResponse(`새 큐가 생성되었습니다. ID: ${newListId}`, {
+          listId: newListId,
+        });
+      }
+
+      case "isEmpty": {
+        const queue = getListById(queueStore, listId, ToolName.QUEUE);
+        const isEmpty = queue.isEmpty();
+
+        return createResponse(
+          isEmpty ? "큐가 비어있습니다." : "큐가 비어있지 않습니다.",
+          { isEmpty }
+        );
+      }
+
+      case "enqueue": {
+        validateValueParam(value, "enqueue");
+        const queue = getListById(queueStore, listId, ToolName.QUEUE);
+        queue.enqueue(value);
+
+        return createResponse(
+          `큐에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
+      }
+
+      case "dequeue": {
+        const queue = getListById(queueStore, listId, ToolName.QUEUE);
+        const dequeuedValue = queue.dequeue();
+
+        return createResponse(
+          dequeuedValue
+            ? `큐에서 '${JSON.stringify(dequeuedValue)}' 값이 제거되었습니다.`
+            : "큐가 비어있습니다.",
+          dequeuedValue ? { dequeuedValue } : undefined
+        );
+      }
+
+      case "peek": {
+        const queue = getListById(queueStore, listId, ToolName.QUEUE);
+        const peekedValue = queue.peek();
+
+        return createResponse(
+          peekedValue
+            ? `큐의 맨 앞 값: ${JSON.stringify(peekedValue)}`
+            : "큐가 비어있습니다.",
+          peekedValue ? { peekedValue } : undefined
+        );
+      }
+
+      case "toString": {
+        const queue = getListById(queueStore, listId, ToolName.QUEUE);
+        const stringifiedQueue = queue.toString();
+
+        return createResponse(`큐의 내용: ${stringifiedQueue}`);
+      }
+
+      default:
+        throw new Error(
+          `지원하지 않는 작업: ${operation}. 가능한 작업: create, enqueue, dequeue, peek, isEmpty, toString`
         );
     }
   },
