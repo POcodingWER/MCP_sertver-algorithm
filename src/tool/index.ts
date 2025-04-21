@@ -19,7 +19,7 @@ export const ToolSchemas = {
         "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
       ),
     value: z
-      .any()
+      .string()
       .optional()
       .describe("작업에 사용할 값 (append, prepend, delete, find 작업에 필수)"),
     listId: z
