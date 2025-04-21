@@ -3,7 +3,7 @@
 ## Test
 
 ```bash
-pnpm test -- src/tool/linked_list/test
+pnpm test -- src/algorithm/LinkedList/test
 ```
 
 ## Used
@@ -14,9 +14,6 @@ pnpm test -- src/tool/linked_list/test
 
 ```
 {"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"create"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"create"}}}'
 ```
 
 응답에서 반환된 `listId`를 저장하여 이후 작업에 사용해야 합니다.
@@ -25,80 +22,30 @@ curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost
 
 ```
 {"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"append","listId":"생성된 ID","value":"데이터1"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"append","listId":"list_1745209114338_k4lnfac","value":"안녕하세요"}}}'
 ```
 
 3. **값 추가 - 리스트 앞에 (prepend)**
 
 ```
 {"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"prepend","listId":"생성된 ID","value":"데이터2"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"prepend","listId":"list_1745209114338_k4lnfac","value":"반갑습니다"}}}'
 ```
 
 4. **값 찾기 (find)**
 
 ```
 {"jsonrpc":"2.0","id":"4","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"find","listId":"생성된 ID","value":"데이터1"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"5","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"find","listId":"list_1745209114338_k4lnfac","value":"안녕하세요"}}}'
 ```
 
 5. **값 삭제 (delete)**
 
 ```
 {"jsonrpc":"2.0","id":"5","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"delete","listId":"생성된 ID","value":"데이터1"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"6","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"delete","listId":"list_1745209114338_k4lnfac","value":"안녕하세요"}}}'
 ```
 
 6. **전체 리스트 조회 (toArray)**
 
 ```
 {"jsonrpc":"2.0","id":"6","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"toArray","listId":"생성된 ID"}}}
-
-//sse
-curl -s http://localhost:3333/sse & sleep 2; echo; curl -X POST http://localhost:3333/messages -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":"4","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"toArray","listId":"list_1745209114338_k4lnfac"}}}'
-```
-
-### 사용 시나리오 예시
-
-1. 리스트 생성 후 여러 값 추가하기:
-
-```
-# 새 리스트 생성
-{"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"create"}}}
-# 응답: {"jsonrpc":"2.0","id":"1","result":{"content":[{"type":"text","text":"새 연결 리스트가 생성되었습니다. ID: 생성된 ID"}],"metadata":{"listId":"생성된 ID"}}}
-
-# 값 추가 (append)
-{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"append","listId":"생성된 ID","value":"사과"}}}
-
-# 값 추가 (prepend)
-{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"prepend","listId":"생성된 ID","value":"바나나"}}}
-
-# 리스트 조회
-{"jsonrpc":"2.0","id":"4","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"toArray","listId":"생성된 ID"}}}
-# 응답: {"jsonrpc":"2.0","id":"4","result":{"content":[{"type":"text","text":"연결 리스트의 내용: [\"바나나\",\"사과\"]"}],"metadata":{"values":["바나나","사과"]}}}
-```
-
-2. 값 검색 및 삭제:
-
-```
-# 값 찾기
-{"jsonrpc":"2.0","id":"5","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"find","listId":"list_1708661234_a7b3c9d","value":"사과"}}}
-# 응답: {"jsonrpc":"2.0","id":"5","result":{"content":[{"type":"text","text":"연결 리스트에서 '사과' 값을 찾았습니다."}],"metadata":{"value":"사과"}}}
-
-# 값 삭제
-{"jsonrpc":"2.0","id":"6","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"delete","listId":"list_1708661234_a7b3c9d","value":"사과"}}}
-
-# 삭제 후 리스트 조회
-{"jsonrpc":"2.0","id":"7","method":"tools/call","params":{"name":"linked-list","arguments":{"operation":"toArray","listId":"list_1708661234_a7b3c9d"}}}
-# 응답: {"jsonrpc":"2.0","id":"7","result":{"content":[{"type":"text","text":"연결 리스트의 내용: [\"바나나\"]"}],"metadata":{"values":["바나나"]}}}
 ```
 
 ## Description

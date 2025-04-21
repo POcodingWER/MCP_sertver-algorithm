@@ -1,10 +1,12 @@
 import { z } from "zod";
 import LinkedList from "../algorithm/LinkedList/LinkedList";
+import DoublyLinkedList from "../algorithm/DoublyLinkedList/DoublyLinkedList";
 
 // 도구 이름 열거형
 export enum ToolName {
   ECHO = "echo",
   LINKED_LIST = "linked-list",
+  DOUBLY_LINKED_LIST = "doubly-linked-list",
 }
 
 // 도구 스키마 정의
@@ -29,194 +31,279 @@ export const ToolSchemas = {
         "연결 리스트 식별자 (create 제외한 모든 작업에 필수, create에서 반환됨)"
       ),
   }),
+  [ToolName.DOUBLY_LINKED_LIST]: z.object({
+    operation: z
+      .enum([
+        "create",
+        "append",
+        "prepend",
+        "delete",
+        "find",
+        "toArray",
+        "toArrayReverse",
+      ])
+      .describe(
+        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
+      ),
+    value: z
+      .string()
+      .optional()
+      .describe("작업에 사용할 값 (append, prepend, delete, find 작업에 필수)"),
+    listId: z.string(),
+  }),
 };
 
 // 연결 리스트를 저장하는 인메모리 저장소
 const listStore: Map<string, LinkedList<any>> = new Map();
+const doublyListStore: Map<string, DoublyLinkedList<any>> = new Map();
+
+const generateListId = (): string => {
+  return `list_${Math.floor(Math.random() * 1000)}`;
+};
+
+const validateValueParam = (value: unknown, operation: string): void => {
+  if (value === undefined) {
+    throw new Error(`${operation} 작업에는 'value' 파라미터가 필요합니다.`);
+  }
+};
+
+const getListById = <T>(
+  store: Map<string, T>,
+  listId: string | undefined,
+  toolName: string
+): T => {
+  if (!listId || !store.has(listId)) {
+    throw new Error(
+      `유효한 리스트 ID가 필요합니다. 먼저 '${toolName}' 도구의 'create' 작업을 호출하여 listId를 얻으세요.`
+    );
+  }
+  return store.get(listId)!;
+};
+
+/**
+ * 표준 응답 객체 생성 함수
+ * @param message 반환할 메시지 텍스트
+ * @param metadata 추가 메타데이터 (선택적)
+ * @returns 표준화된 응답 객체
+ */
+const createResponse = (message: string, metadata?: Record<string, any>) => {
+  return {
+    content: [
+      {
+        type: "text",
+        text: message,
+      },
+    ],
+    ...(metadata && { metadata }),
+  };
+};
 
 // 도구 호출 핸들러
 export const ToolHandlers = {
-  //{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"echo","arguments":{"message":"안녕하세요"}}}
+  // 에코 도구: 입력된 메시지를 그대로 반환
   [ToolName.ECHO]: async (args: Record<string, unknown> | undefined) => {
     const validatedArgs = ToolSchemas[ToolName.ECHO].parse(args);
-    return {
-      content: [
-        {
-          type: "text",
-          text: `에코: ${validatedArgs.message}`,
-        },
-      ],
-    };
+    return createResponse(`에코: ${validatedArgs.message}`);
   },
-
+  //    연결 리스트 도구: 단방향 연결 리스트 구현
   [ToolName.LINKED_LIST]: async (args: Record<string, unknown> | undefined) => {
     const validatedArgs = ToolSchemas[ToolName.LINKED_LIST].parse(args);
     const { operation, value, listId } = validatedArgs;
 
     switch (operation) {
       case "create": {
-        // 새 연결 리스트 생성
-        const newListId = `list_${Date.now()}_${Math.random()
-          .toString(36)
-          .substring(2, 9)}`;
+        const newListId = generateListId();
         const newList = new LinkedList();
         listStore.set(newListId, newList);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `새 연결 리스트가 생성되었습니다. ID: ${newListId}`,
-            },
-          ],
-          metadata: { listId: newListId },
-        };
+        return createResponse(
+          `새 연결 리스트가 생성되었습니다. ID: ${newListId}`,
+          { listId: newListId }
+        );
       }
 
       case "append": {
-        if (!listId || !listStore.has(listId)) {
-          throw new Error(
-            "유효한 리스트 ID가 필요합니다. 먼저 'create' 작업을 호출하여 listId를 얻으세요."
-          );
-        }
-
-        if (value === undefined) {
-          throw new Error(
-            "추가할 값이 필요합니다. 'value' 파라미터를 지정하세요."
-          );
-        }
-
-        const list = listStore.get(listId)!;
+        validateValueParam(value, "append");
+        const list = getListById(listStore, listId, ToolName.LINKED_LIST);
         list.append(value);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `연결 리스트 끝에 '${JSON.stringify(
-                value
-              )}' 값이 추가되었습니다.`,
-            },
-          ],
-        };
+        return createResponse(
+          `연결 리스트 끝에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
       }
 
       case "prepend": {
-        if (!listId || !listStore.has(listId)) {
-          throw new Error(
-            "유효한 리스트 ID가 필요합니다. 먼저 'create' 작업을 호출하여 listId를 얻으세요."
-          );
-        }
-
-        if (value === undefined) {
-          throw new Error(
-            "추가할 값이 필요합니다. 'value' 파라미터를 지정하세요."
-          );
-        }
-
-        const list = listStore.get(listId)!;
+        validateValueParam(value, "prepend");
+        const list = getListById(listStore, listId, ToolName.LINKED_LIST);
         list.prepend(value);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `연결 리스트 앞에 '${JSON.stringify(
-                value
-              )}' 값이 추가되었습니다.`,
-            },
-          ],
-        };
+        return createResponse(
+          `연결 리스트 앞에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
       }
 
       case "delete": {
-        if (!listId || !listStore.has(listId)) {
-          throw new Error(
-            "유효한 리스트 ID가 필요합니다. 먼저 'create' 작업을 호출하여 listId를 얻으세요."
-          );
-        }
-
-        if (value === undefined) {
-          throw new Error(
-            "삭제할 값이 필요합니다. 'value' 파라미터를 지정하세요."
-          );
-        }
-
-        const list = listStore.get(listId)!;
+        validateValueParam(value, "delete");
+        const list = getListById(listStore, listId, ToolName.LINKED_LIST);
         const deletedNode = list.delete(value);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: deletedNode
-                ? `연결 리스트에서 '${JSON.stringify(
-                    value
-                  )}' 값이 삭제되었습니다.`
-                : `연결 리스트에서 '${JSON.stringify(
-                    value
-                  )}' 값을 찾을 수 없습니다.`,
-            },
-          ],
-        };
+        return createResponse(
+          deletedNode
+            ? `연결 리스트에서 '${JSON.stringify(value)}' 값이 삭제되었습니다.`
+            : `연결 리스트에서 '${JSON.stringify(
+                value
+              )}' 값을 찾을 수 없습니다.`,
+          deletedNode ? { deletedValue: deletedNode.value } : undefined
+        );
       }
 
       case "find": {
-        if (!listId || !listStore.has(listId)) {
-          throw new Error(
-            "유효한 리스트 ID가 필요합니다. 먼저 'create' 작업을 호출하여 listId를 얻으세요."
-          );
-        }
-
-        if (value === undefined) {
-          throw new Error(
-            "찾을 값이 필요합니다. 'value' 파라미터를 지정하세요."
-          );
-        }
-
-        const list = listStore.get(listId)!;
+        validateValueParam(value, "find");
+        const list = getListById(listStore, listId, ToolName.LINKED_LIST);
         const foundNode = list.find({ value });
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: foundNode
-                ? `연결 리스트에서 '${JSON.stringify(value)}' 값을 찾았습니다.`
-                : `연결 리스트에서 '${JSON.stringify(
-                    value
-                  )}' 값을 찾을 수 없습니다.`,
-            },
-          ],
-          metadata: foundNode ? { value: foundNode.value } : undefined,
-        };
+        return createResponse(
+          foundNode
+            ? `연결 리스트에서 '${JSON.stringify(value)}' 값을 찾았습니다.`
+            : `연결 리스트에서 '${JSON.stringify(
+                value
+              )}' 값을 찾을 수 없습니다.`,
+          foundNode ? { value: foundNode.value } : undefined
+        );
       }
 
       case "toArray": {
-        if (!listId || !listStore.has(listId)) {
-          throw new Error(
-            "유효한 리스트 ID가 필요합니다. 먼저 'create' 작업을 호출하여 listId를 얻으세요."
-          );
-        }
-
-        const list = listStore.get(listId)!;
+        const list = getListById(listStore, listId, ToolName.LINKED_LIST);
         const nodes = list.toArray();
         const values = nodes.map((node: any) => node.value);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `연결 리스트의 내용: ${JSON.stringify(values)}`,
-            },
-          ],
-          metadata: { values },
-        };
+        return createResponse(`연결 리스트의 내용: ${JSON.stringify(values)}`, {
+          values,
+        });
       }
 
       default:
         throw new Error(
           `지원하지 않는 작업: ${operation}. 가능한 작업: create, append, prepend, delete, find, toArray`
+        );
+    }
+  },
+  // 이중 연결 리스트 도구: 양방향 연결 리스트 구현
+  [ToolName.DOUBLY_LINKED_LIST]: async (
+    args: Record<string, unknown> | undefined
+  ) => {
+    const validatedArgs = ToolSchemas[ToolName.DOUBLY_LINKED_LIST].parse(args);
+    const { operation, value, listId } = validatedArgs;
+
+    switch (operation) {
+      case "create": {
+        const newListId = generateListId();
+        const newList = new DoublyLinkedList();
+        doublyListStore.set(newListId, newList);
+
+        return createResponse(
+          `새 연결 리스트가 생성되었습니다. ID: ${newListId}`,
+          { listId: newListId }
+        );
+      }
+
+      case "append": {
+        validateValueParam(value, "append");
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        list.append(value);
+
+        return createResponse(
+          `연결 리스트 끝에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
+      }
+
+      case "prepend": {
+        validateValueParam(value, "prepend");
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        list.prepend(value);
+
+        return createResponse(
+          `연결 리스트 앞에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
+      }
+
+      case "delete": {
+        validateValueParam(value, "delete");
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        const deletedNode = list.delete(value);
+
+        return createResponse(
+          deletedNode
+            ? `연결 리스트에서 '${JSON.stringify(value)}' 값이 삭제되었습니다.`
+            : `연결 리스트에서 '${JSON.stringify(
+                value
+              )}' 값을 찾을 수 없습니다.`,
+          deletedNode ? { deletedValue: deletedNode.value } : undefined
+        );
+      }
+
+      case "find": {
+        validateValueParam(value, "find");
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        const foundNode = list.find({ value });
+
+        return createResponse(
+          foundNode
+            ? `연결 리스트에서 '${JSON.stringify(value)}' 값을 찾았습니다.`
+            : `연결 리스트에서 '${JSON.stringify(
+                value
+              )}' 값을 찾을 수 없습니다.`,
+          foundNode ? { value: foundNode.value } : undefined
+        );
+      }
+
+      case "toArray": {
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        const nodes = list.toArray();
+        const values = nodes.map((node: any) => node.value);
+
+        return createResponse(`연결 리스트의 내용: ${JSON.stringify(values)}`, {
+          values,
+        });
+      }
+
+      case "toArrayReverse": {
+        const list = getListById(
+          doublyListStore,
+          listId,
+          ToolName.DOUBLY_LINKED_LIST
+        );
+        const nodes = list.toArrayReverse();
+        const values = nodes.map((node: any) => node.value);
+
+        return createResponse(`연결 리스트의 내용: ${JSON.stringify(values)}`, {
+          values,
+        });
+      }
+
+      default:
+        throw new Error(
+          `지원하지 않는 작업: ${operation}. 가능한 작업: create, append, prepend, delete, find, toArray, toArrayReverse`
         );
     }
   },

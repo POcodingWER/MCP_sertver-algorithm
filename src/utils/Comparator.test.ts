@@ -1,4 +1,4 @@
-import Comparator from "./index";
+import Comparator from "./Comparator";
 
 describe("utils/Comparator", () => {
   it("기본 비교 함수로 비교해야 합니다", () => {
