@@ -9,6 +9,7 @@ export enum ToolName {
   QUEUE = "queue",
   STACK = "stack",
   HASH_TABLE = "hash-table",
+  HEAP = "heap",
 }
 
 // 도구 스키마 정의
@@ -90,6 +91,19 @@ export const ToolSchemas = {
     value: z.string().optional().describe("해시 테이블의 값 (set 작업에 필수)"),
     listId: z.string(),
   }),
+  [ToolName.HEAP]: z.object({
+    operation: z.enum([
+      "create",
+      "add",
+      "poll",
+      "find",
+      "remove",
+      "toString",
+      "peek",
+    ]),
+    value: z.number().optional().describe("힙의 값 (add, remove 작업에 필수)"),
+    listId: z.string(),
+  }),
 };
 
 export const ToolListDescription = [
@@ -159,5 +173,20 @@ export const ToolListDescription = [
       '3) set/get/delete/has/getKeys: 해시 테이블에 값 설정/조회/삭제/확인/키 조회 (예: operation: "set", listId: "hash_123", key: "some key", value: "some value")' +
       '4) toString: 해시 테이블의 내용 문자열로 반환 (예: operation: "toString", listId: "hash_123")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.HASH_TABLE]),
+  },
+  {
+    name: ToolName.HEAP,
+    description:
+      "힙 자료구조를 관리하고 조작합니다." +
+      "사용법:" +
+      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+      "2) 얻은 listId를 이후 모든 작업에 사용" +
+      '3) add: 힙에 새로운 값을 추가 (예: operation: "add", listId: "heap_123", value: "10")' +
+      '4) peek: 최상위(최소) 값을 조회 (제거하지 않음) (예: operation: "peek", listId: "heap_123")' +
+      '5) poll: 최상위(최소) 값을 제거하고 반환 (예: operation: "poll", listId: "heap_123")' +
+      '6) find: 특정 값의 존재 여부와 위치를 검색 (예: operation: "find", listId: "heap_123", value: "10")' +
+      '7) remove: 특정 값을 힙에서 제거 (예: operation: "remove", listId: "heap_123", value: "10")' +
+      '8) toString: 힙의 전체 내용을 문자열로 반환 (예: operation: "toString", listId: "heap_123")',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.HEAP]),
   },
 ];
