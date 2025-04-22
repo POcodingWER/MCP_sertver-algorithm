@@ -8,6 +8,7 @@ export enum ToolName {
   DOUBLY_LINKED_LIST = "doubly-linked-list",
   QUEUE = "queue",
   STACK = "stack",
+  HASH_TABLE = "hash-table",
 }
 
 // 도구 스키마 정의
@@ -76,6 +77,19 @@ export const ToolSchemas = {
       .describe("작업에 사용할 값 (push, pop, peek 작업에 필수)"),
     listId: z.string(),
   }),
+  [ToolName.HASH_TABLE]: z.object({
+    operation: z
+      .enum(["create", "set", "get", "delete", "has", "getKeys"])
+      .describe(
+        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
+      ),
+    key: z
+      .string()
+      .optional()
+      .describe("해시 테이블의 키 (set, get, delete, has 작업에 필수)"),
+    value: z.string().optional().describe("해시 테이블의 값 (set 작업에 필수)"),
+    listId: z.string(),
+  }),
 };
 
 export const ToolListDescription = [
@@ -134,5 +148,16 @@ export const ToolListDescription = [
       '5) isEmpty: 스택이 비어있는지 확인 (예: operation: "isEmpty", listId: "stack_123")' +
       '6) toArray: 전체 스택 조회 (예: operation: "toArray", listId: "stack_123")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.STACK]),
+  },
+  {
+    name: ToolName.HASH_TABLE,
+    description:
+      "해시 테이블 자료구조를 관리하고 조작합니다." +
+      "사용법:" +
+      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+      "2) 얻은 listId를 이후 모든 작업에 사용" +
+      '3) set/get/delete/has/getKeys: 해시 테이블에 값 설정/조회/삭제/확인/키 조회 (예: operation: "set", listId: "hash_123", key: "some key", value: "some value")' +
+      '4) toString: 해시 테이블의 내용 문자열로 반환 (예: operation: "toString", listId: "hash_123")',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.HASH_TABLE]),
   },
 ];

@@ -5,8 +5,6 @@ import { createServer } from "./createServer";
 const { server } = createServer();
 
 const app = express();
-// JSON 요청 본문 파싱을 위한 미들웨어 추가
-// app.use(express.json());
 
 // 세션별로 transport를 저장하는 Map으로 변경
 const transports = new Map<string, SSEServerTransport>();
