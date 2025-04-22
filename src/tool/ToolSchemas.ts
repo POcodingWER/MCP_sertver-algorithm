@@ -10,6 +10,7 @@ export enum ToolName {
   STACK = "stack",
   HASH_TABLE = "hash-table",
   HEAP = "heap",
+  PRIORITY_QUEUE = "priority-queue",
 }
 
 // 도구 스키마 정의
@@ -104,6 +105,34 @@ export const ToolSchemas = {
     value: z.number().optional().describe("힙의 값 (add, remove 작업에 필수)"),
     listId: z.string(),
   }),
+  [ToolName.PRIORITY_QUEUE]: z.object({
+    operation: z
+      .enum([
+        "create",
+        "add",
+        "remove",
+        "changePriority",
+        "findByValue",
+        "hasValue",
+        "compareValue",
+      ])
+      .describe(
+        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
+      ),
+    value: z
+      .string()
+      .optional()
+      .describe(
+        "작업에 사용할 값 (add, remove, changePriority, findByValue, hasValue 작업에 필수)"
+      ),
+    value1: z.string().optional().describe("compareValue 작업의 첫 번째 값"),
+    value2: z.string().optional().describe("compareValue 작업의 두 번째 값"),
+    priority: z
+      .number()
+      .optional()
+      .describe("우선순위 (add, changePriority 작업에 필수)"),
+    listId: z.string(),
+  }),
 };
 
 export const ToolListDescription = [
@@ -188,5 +217,20 @@ export const ToolListDescription = [
       '7) remove: 특정 값을 힙에서 제거 (예: operation: "remove", listId: "heap_123", value: "10")' +
       '8) toString: 힙의 전체 내용을 문자열로 반환 (예: operation: "toString", listId: "heap_123")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.HEAP]),
+  },
+  {
+    name: ToolName.PRIORITY_QUEUE,
+    description:
+      "우선순위 큐 자료구조를 관리하고 조작합니다." +
+      "사용법:" +
+      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+      "2) 얻은 listId를 이후 모든 작업에 사용" +
+      '3) add: 우선순위 큐에 새로운 값을 추가 (예: operation: "add", listId: "priority_queue_123", value: "some value", priority: "10")' +
+      '4) remove: 특정 값을 우선순위 큐에서 제거 (예: operation: "remove", listId: "priority_queue_123", value: "some value")' +
+      '5) changePriority: 특정 값의 우선순위를 변경 (예: operation: "changePriority", listId: "priority_queue_123", value: "some value", priority: "20")' +
+      '6) findByValue: 특정 값의 존재 여부와 위치를 검색 (예: operation: "findByValue", listId: "priority_queue_123", value: "some value")' +
+      '7) hasValue: 특정 값의 존재 여부를 확인 (예: operation: "hasValue", listId: "priority_queue_123", value: "some value")' +
+      '8) compareValue: 두 값을 비교 (예: operation: "compareValue", listId: "priority_queue_123", value1: "some value", value2: "some value")',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.PRIORITY_QUEUE]),
   },
 ];

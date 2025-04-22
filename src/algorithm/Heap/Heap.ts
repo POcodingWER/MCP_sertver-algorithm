@@ -2,7 +2,7 @@ import Comparator from "../../utils/Comparator";
 
 export default class Heap<T> {
   private heapContainer: T[];
-  private compare: Comparator<T>;
+  protected compare: Comparator<T>;
 
   /**
    * @param {Function} [comparatorFunction] 비교 함수
