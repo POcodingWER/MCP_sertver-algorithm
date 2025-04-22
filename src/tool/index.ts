@@ -1,76 +1,14 @@
-import { z } from "zod";
 import LinkedList from "../algorithm/LinkedList/LinkedList";
 import DoublyLinkedList from "../algorithm/DoublyLinkedList/DoublyLinkedList";
 import Queue from "../algorithm/Queue/Queue";
-
-// 도구 이름 열거형
-export enum ToolName {
-  ECHO = "echo",
-  LINKED_LIST = "linked-list",
-  DOUBLY_LINKED_LIST = "doubly-linked-list",
-  QUEUE = "queue",
-}
-
-// 도구 스키마 정의
-export const ToolSchemas = {
-  [ToolName.ECHO]: z.object({
-    message: z.string().describe("메시지를 에코합니다"),
-  }),
-  [ToolName.LINKED_LIST]: z.object({
-    operation: z
-      .enum(["create", "append", "prepend", "delete", "find", "toArray"])
-      .describe(
-        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
-      ),
-    value: z
-      .string()
-      .optional()
-      .describe("작업에 사용할 값 (append, prepend, delete, find 작업에 필수)"),
-    listId: z
-      .string()
-      .optional()
-      .describe(
-        "연결 리스트 식별자 (create 제외한 모든 작업에 필수, create에서 반환됨)"
-      ),
-  }),
-  [ToolName.DOUBLY_LINKED_LIST]: z.object({
-    operation: z
-      .enum([
-        "create",
-        "append",
-        "prepend",
-        "delete",
-        "find",
-        "toArray",
-        "toArrayReverse",
-      ])
-      .describe(
-        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
-      ),
-    value: z
-      .string()
-      .optional()
-      .describe("작업에 사용할 값 (append, prepend, delete, find 작업에 필수)"),
-    listId: z.string(),
-  }),
-  [ToolName.QUEUE]: z.object({
-    operation: z
-      .enum(["create", "isEmpty", "peek", "enqueue", "dequeue", "toString"])
-      .describe(
-        "수행할 작업 - 먼저 create로 시작하고 반환된 listId를 저장해야 함"
-      ),
-    value: z
-      .string()
-      .optional()
-      .describe("작업에 사용할 값 (enqueue, dequeue, peek 작업에 필수)"),
-    listId: z.string(),
-  }),
-};
+import Stack from "../algorithm/Stack/Stack";
+import { ToolName, ToolSchemas } from "./ToolSchemas";
 
 // 연결 리스트를 저장하는 인메모리 저장소
 const listStore: Map<string, LinkedList<any>> = new Map();
 const doublyListStore: Map<string, DoublyLinkedList<any>> = new Map();
 const queueStore: Map<string, Queue<any>> = new Map();
+const stackStore: Map<string, Stack<any>> = new Map();
 
 const validateValueParam = (value: unknown, operation: string): void => {
   if (value === undefined) {
@@ -318,6 +256,7 @@ export const ToolHandlers = {
         );
     }
   },
+  // 큐 도구: 큐 구현
   [ToolName.QUEUE]: async (args: Record<string, unknown> | undefined) => {
     const validatedArgs = ToolSchemas[ToolName.QUEUE].parse(args);
     const { operation, value, listId } = validatedArgs;
@@ -387,6 +326,80 @@ export const ToolHandlers = {
       default:
         throw new Error(
           `지원하지 않는 작업: ${operation}. 가능한 작업: create, enqueue, dequeue, peek, isEmpty, toString`
+        );
+    }
+  },
+  // 스택 도구: 스택 구현
+  [ToolName.STACK]: async (args: Record<string, unknown> | undefined) => {
+    const validatedArgs = ToolSchemas[ToolName.STACK].parse(args);
+    const { operation, value, listId } = validatedArgs;
+
+    switch (operation) {
+      case "create": {
+        const newListId = `stack_${Math.floor(Math.random() * 1000)}`;
+        const newStack = new Stack();
+        stackStore.set(newListId, newStack);
+
+        return createResponse(`새 스택이 생성되었습니다. ID: ${newListId}`, {
+          listId: newListId,
+        });
+      }
+      case "isEmpty": {
+        const stack = getListById(stackStore, listId, ToolName.STACK);
+        const isEmpty = stack.isEmpty();
+
+        return createResponse(
+          isEmpty ? "스택이 비어있습니다." : "스택이 비어있지 않습니다.",
+          { isEmpty }
+        );
+      }
+
+      case "push": {
+        validateValueParam(value, "push");
+        const stack = getListById(stackStore, listId, ToolName.STACK);
+        stack.push(value);
+
+        return createResponse(
+          `스택에 '${JSON.stringify(value)}' 값이 추가되었습니다.`
+        );
+      }
+
+      case "pop": {
+        const stack = getListById(stackStore, listId, ToolName.STACK);
+        const poppedValue = stack.pop();
+
+        return createResponse(
+          poppedValue
+            ? `스택에서 '${JSON.stringify(poppedValue)}' 값이 제거되었습니다.`
+            : "스택이 비어있습니다.",
+          poppedValue ? { poppedValue } : undefined
+        );
+      }
+
+      case "peek": {
+        const stack = getListById(stackStore, listId, ToolName.STACK);
+        const peekedValue = stack.peek();
+
+        return createResponse(
+          peekedValue
+            ? `스택의 맨 위 값: ${JSON.stringify(peekedValue)}`
+            : "스택이 비어있습니다.",
+          peekedValue ? { peekedValue } : undefined
+        );
+      }
+
+      case "toArray": {
+        const stack = getListById(stackStore, listId, ToolName.STACK);
+        const array = stack.toArray();
+
+        return createResponse(`스택의 내용: ${JSON.stringify(array)}`, {
+          array,
+        });
+      }
+
+      default:
+        throw new Error(
+          `지원하지 않는 작업: ${operation}. 가능한 작업: create, push, pop, peek, isEmpty, toString`
         );
     }
   },
