@@ -10,6 +10,7 @@ export enum ToolName {
   HASH_TABLE = "hash-table",
   HEAP = "heap",
   PRIORITY_QUEUE = "priority-queue",
+  TRIE = "trie",
 }
 
 // 도구 스키마 정의
@@ -130,6 +131,16 @@ export const ToolSchemas = {
       .number()
       .optional()
       .describe("우선순위 (add, changePriority 작업에 필수)"),
+    listId: z.string(),
+  }),
+  [ToolName.TRIE]: z.object({
+    operation: z.enum([
+      "create",
+      "addWord",
+      "suggestNextCharacters",
+      "doesWordExist",
+    ]),
+    word: z.string().optional().describe("추가할 단어 (addWord 작업에 필수)"),
     listId: z.string(),
   }),
 };

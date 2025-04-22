@@ -100,4 +100,16 @@ export const ToolListDescription = [
       '8) compareValue: 두 값을 비교 (예: operation: "compareValue", listId: "priority_queue_123", value1: "some value", value2: "some value")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.PRIORITY_QUEUE]),
   },
+  {
+    name: ToolName.TRIE,
+    description:
+      "트라이 자료구조를 관리하고 조작합니다." +
+      "사용법:" +
+      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+      "2) 얻은 listId를 이후 모든 작업에 사용" +
+      '3) addWord: 트라이에 단어를 추가 (예: operation: "addWord", listId: "trie_123", word: "some word")' +
+      '4) suggestNextCharacters: 트라이에서 다음 문자를 제안 (예: operation: "suggestNextCharacters", listId: "trie_123", word: "some word")' +
+      '5) doesWordExist: 트라이에서 단어의 존재 여부를 확인 (예: operation: "doesWordExist", listId: "trie_123", word: "some word")',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.TRIE]),
+  },
 ];

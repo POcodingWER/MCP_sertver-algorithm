@@ -6,6 +6,7 @@ import { stackHandler } from "./ToolHandlers/stackHandler";
 import { queueHandler } from "./ToolHandlers/queueHandler";
 import { doublyLinkedListHandler } from "./ToolHandlers/doublyLinkedListHandler";
 import { linkedListHandler } from "./ToolHandlers/linkedListHandler";
+import { trieHandler } from "./ToolHandlers/trieHandler";
 
 // 도구 호출 핸들러
 export const ToolHandlers = {
@@ -27,4 +28,5 @@ export const ToolHandlers = {
   [ToolName.HASH_TABLE]: hashTableHandler,
   [ToolName.HEAP]: heapHandler,
   [ToolName.PRIORITY_QUEUE]: priorityQueueHandler,
+  [ToolName.TRIE]: trieHandler,
 };
