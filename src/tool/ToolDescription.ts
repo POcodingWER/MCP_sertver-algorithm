@@ -112,4 +112,15 @@ export const ToolListDescription = [
       '5) doesWordExist: 트라이에서 단어의 존재 여부를 확인 (예: operation: "doesWordExist", listId: "trie_123", word: "some word")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.TRIE]),
   },
+  {
+    name: ToolName.BINARY_SEARCH_TREE,
+    description:
+      "이진 검색 트리 자료구조를 관리하고 조작합니다." +
+      "사용법:" +
+      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
+      "2) 얻은 listId를 이후 모든 작업에 사용" +
+      '3) insert/contains/remove/toString: 이진 검색 트리에 값 삽입/존재 여부 확인/제거/문자열 표현 (예: operation: "insert", listId: "binary_search_tree_123", value: "some value")' +
+      '4) toString: 이진 검색 트리의 내용 문자열로 반환 (예: operation: "toString", listId: "binary_search_tree_123")',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.BINARY_SEARCH_TREE]),
+  },
 ];

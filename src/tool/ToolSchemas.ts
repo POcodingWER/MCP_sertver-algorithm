@@ -11,6 +11,7 @@ export enum ToolName {
   HEAP = "heap",
   PRIORITY_QUEUE = "priority-queue",
   TRIE = "trie",
+  BINARY_SEARCH_TREE = "binary-search-tree",
 }
 
 // 도구 스키마 정의
@@ -141,6 +142,14 @@ export const ToolSchemas = {
       "doesWordExist",
     ]),
     word: z.string().optional().describe("추가할 단어 (addWord 작업에 필수)"),
+    listId: z.string(),
+  }),
+  [ToolName.BINARY_SEARCH_TREE]: z.object({
+    operation: z.enum(["create", "insert", "contains", "remove", "toString"]),
+    value: z
+      .string()
+      .optional()
+      .describe("값 (insert, contains, remove 작업에 필수)"),
     listId: z.string(),
   }),
 };

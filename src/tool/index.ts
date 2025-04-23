@@ -7,6 +7,7 @@ import { queueHandler } from "./ToolHandlers/queueHandler";
 import { doublyLinkedListHandler } from "./ToolHandlers/doublyLinkedListHandler";
 import { linkedListHandler } from "./ToolHandlers/linkedListHandler";
 import { trieHandler } from "./ToolHandlers/trieHandler";
+import { binarySearchTreeHandler } from "./ToolHandlers/binarySearchTreeHandler";
 
 // 도구 호출 핸들러
 export const ToolHandlers = {
@@ -29,4 +30,5 @@ export const ToolHandlers = {
   [ToolName.HEAP]: heapHandler,
   [ToolName.PRIORITY_QUEUE]: priorityQueueHandler,
   [ToolName.TRIE]: trieHandler,
+  [ToolName.BINARY_SEARCH_TREE]: binarySearchTreeHandler,
 };
