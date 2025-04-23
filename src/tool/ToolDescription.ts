@@ -138,4 +138,21 @@ export const ToolListDescription = [
       '5) 트리 출력: {"operation": "toString", "listId": "avl_tree_123"}',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.AVL_TREE]),
   },
+  {
+    name: ToolName.RED_BLACK_TREE,
+    description:
+      "자동으로 균형을 유지하는 이진 검색 트리인 레드-블랙 트리를 관리하고 조작합니다.\n" +
+      "레드-블랙 트리는 각 노드가 빨간색 또는 검은색으로 색칠되어 있으며, 특정 규칙을 따라 균형을 유지합니다.\n\n" +
+      "사용법:" +
+      '1) 트리 생성: {"operation": "create"}\n' +
+      '2) 값 삽입: {"operation": "insert", "listId": "red_black_tree_123", "value": "50"}\n' +
+      '3) 균형 확인: {"operation": "getBalance", "listId": "red_black_tree_123"}\n' +
+      '4) 값 검색: {"operation": "contains", "listId": "red_black_tree_123", "value": "50"}\n' +
+      '5) 트리 출력: {"operation": "toString", "listId": "red_black_tree_123"}\n' +
+      "6) 노드 색상 확인:\n" +
+      '   - 빨간색 확인: {"operation": "isNodeRed", "listId": "red_black_tree_123", "value": "50"}\n' +
+      '   - 검은색 확인: {"operation": "isNodeBlack", "listId": "red_black_tree_123", "value": "50"}\n' +
+      '   - 색상 존재 확인: {"operation": "isNodeColored", "listId": "red_black_tree_123", "value": "50"}',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.RED_BLACK_TREE]),
+  },
 ];
