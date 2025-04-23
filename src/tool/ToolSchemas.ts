@@ -12,6 +12,7 @@ export enum ToolName {
   PRIORITY_QUEUE = "priority-queue",
   TRIE = "trie",
   BINARY_SEARCH_TREE = "binary-search-tree",
+  AVL_TREE = "avl-tree",
 }
 
 // 도구 스키마 정의
@@ -145,7 +146,29 @@ export const ToolSchemas = {
     listId: z.string(),
   }),
   [ToolName.BINARY_SEARCH_TREE]: z.object({
-    operation: z.enum(["create", "insert", "contains", "remove", "toString"]),
+    operation: z.enum([
+      "create",
+      "insert",
+      "contains",
+      "remove",
+      "toString",
+      "getBalance",
+    ]),
+    value: z
+      .string()
+      .optional()
+      .describe("값 (insert, contains, remove 작업에 필수)"),
+    listId: z.string(),
+  }),
+  [ToolName.AVL_TREE]: z.object({
+    operation: z.enum([
+      "create",
+      "insert",
+      "contains",
+      "remove",
+      "toString",
+      "getBalance",
+    ]),
     value: z
       .string()
       .optional()

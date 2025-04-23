@@ -8,6 +8,7 @@ import { doublyLinkedListHandler } from "./ToolHandlers/doublyLinkedListHandler"
 import { linkedListHandler } from "./ToolHandlers/linkedListHandler";
 import { trieHandler } from "./ToolHandlers/trieHandler";
 import { binarySearchTreeHandler } from "./ToolHandlers/binarySearchTreeHandler";
+import { avlTreeHandler } from "./ToolHandlers/avlTreeHandler";
 
 // 도구 호출 핸들러
 export const ToolHandlers = {
@@ -31,4 +32,5 @@ export const ToolHandlers = {
   [ToolName.PRIORITY_QUEUE]: priorityQueueHandler,
   [ToolName.TRIE]: trieHandler,
   [ToolName.BINARY_SEARCH_TREE]: binarySearchTreeHandler,
+  [ToolName.AVL_TREE]: avlTreeHandler,
 };

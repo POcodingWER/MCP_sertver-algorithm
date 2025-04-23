@@ -115,12 +115,27 @@ export const ToolListDescription = [
   {
     name: ToolName.BINARY_SEARCH_TREE,
     description:
-      "이진 검색 트리 자료구조를 관리하고 조작합니다." +
+      "이진 검색 트리 자료구조를 관리하고 조작합니다.\n" +
+      "이진 검색 트리는 각 노드의 왼쪽 서브트리에는 더 작은 값들이, 오른쪽 서브트리에는 더 큰 값들이 저장됩니다.\n\n" +
       "사용법:" +
-      '1) create 작업으로 시작하여 listId를 얻음 (예: operation: "create")' +
-      "2) 얻은 listId를 이후 모든 작업에 사용" +
-      '3) insert/contains/remove/toString: 이진 검색 트리에 값 삽입/존재 여부 확인/제거/문자열 표현 (예: operation: "insert", listId: "binary_search_tree_123", value: "some value")' +
-      '4) toString: 이진 검색 트리의 내용 문자열로 반환 (예: operation: "toString", listId: "binary_search_tree_123")',
+      '1) 트리 생성: {"operation": "create"}\n' +
+      '2) 값 삽입: {"operation": "insert", "listId": "binary_search_tree_123", "value": "50"}\n' +
+      '3) 균형 확인: {"operation": "getBalance", "listId": "binary_search_tree_123"}\n' +
+      '4) 값 검색: {"operation": "contains", "listId": "binary_search_tree_123", "value": "50"}\n' +
+      '5) 트리 출력: {"operation": "toString", "listId": "binary_search_tree_123"}',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.BINARY_SEARCH_TREE]),
+  },
+  {
+    name: ToolName.AVL_TREE,
+    description:
+      "자동으로 균형을 유지하는 이진 검색 트리인 AVL 트리를 관리하고 조작합니다.\n" +
+      "AVL 트리는 모든 노드의 왼쪽과 오른쪽 서브트리의 높이 차이가 최대 1을 유지합니다.\n\n" +
+      "사용법:" +
+      '1) 트리 생성: {"operation": "create"}\n' +
+      '2) 값 삽입: {"operation": "insert", "listId": "avl_tree_123", "value": "50"}\n' +
+      '3) 균형 확인: {"operation": "getBalance", "listId": "avl_tree_123"}\n' +
+      '4) 값 검색: {"operation": "contains", "listId": "avl_tree_123", "value": "50"}\n' +
+      '5) 트리 출력: {"operation": "toString", "listId": "avl_tree_123"}',
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.AVL_TREE]),
   },
 ];
