@@ -1,13 +1,7 @@
 import zodToJsonSchema from "zod-to-json-schema";
 import { ToolName, ToolSchemas } from "./ToolSchemas";
 
-// 도구 목록 설명
-export const ToolListDescription = [
-  {
-    name: ToolName.ECHO,
-    description: "입력된 메시지를 그대로 반환합니다",
-    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.ECHO]),
-  },
+const DATA_STRUCTURE_TOOLS = [
   {
     name: ToolName.LINKED_LIST,
     description:
@@ -112,6 +106,9 @@ export const ToolListDescription = [
       '5) doesWordExist: 트라이에서 단어의 존재 여부를 확인 (예: operation: "doesWordExist", listId: "trie_123", word: "some word")',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.TRIE]),
   },
+];
+
+const TREE_TOOLS = [
   {
     name: ToolName.BINARY_SEARCH_TREE,
     description:
@@ -155,4 +152,24 @@ export const ToolListDescription = [
       '   - 색상 존재 확인: {"operation": "isNodeColored", "listId": "red_black_tree_123", "value": "50"}',
     inputSchema: zodToJsonSchema(ToolSchemas[ToolName.RED_BLACK_TREE]),
   },
+];
+
+const MATH_TOOLS = [
+  {
+    name: ToolName.IS_POWER_OF_TWO,
+    description: "주어진 숫자가 2의 거듭제곱인지 확인합니다.",
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.IS_POWER_OF_TWO]),
+  },
+];
+
+// 도구 목록 설명
+export const ToolListDescription = [
+  {
+    name: ToolName.ECHO,
+    description: "입력된 메시지를 그대로 반환합니다",
+    inputSchema: zodToJsonSchema(ToolSchemas[ToolName.ECHO]),
+  },
+  ...DATA_STRUCTURE_TOOLS,
+  ...TREE_TOOLS,
+  ...MATH_TOOLS,
 ];

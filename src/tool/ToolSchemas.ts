@@ -14,13 +14,10 @@ export enum ToolName {
   BINARY_SEARCH_TREE = "binary-search-tree",
   AVL_TREE = "avl-tree",
   RED_BLACK_TREE = "red-black-tree",
+  IS_POWER_OF_TWO = "is-power-of-two",
 }
 
-// 도구 스키마 정의
-export const ToolSchemas = {
-  [ToolName.ECHO]: z.object({
-    message: z.string().describe("메시지를 에코합니다"),
-  }),
+const DATA_STRUCTURE_TOOLS = {
   [ToolName.LINKED_LIST]: z.object({
     operation: z
       .enum(["create", "append", "prepend", "delete", "find", "toArray"])
@@ -146,6 +143,9 @@ export const ToolSchemas = {
     word: z.string().optional().describe("추가할 단어 (addWord 작업에 필수)"),
     listId: z.string(),
   }),
+};
+
+const TREE_TOOLS = {
   [ToolName.BINARY_SEARCH_TREE]: z.object({
     operation: z.enum([
       "create",
@@ -196,4 +196,19 @@ export const ToolSchemas = {
       ),
     listId: z.string(),
   }),
+};
+const MATH_TOOLS = {
+  [ToolName.IS_POWER_OF_TWO]: z.object({
+    number: z.number().describe("2의 거듭제곱인지 확인할 숫자"),
+  }),
+};
+
+// 도구 스키마 정의
+export const ToolSchemas = {
+  [ToolName.ECHO]: z.object({
+    message: z.string().describe("메시지를 에코합니다"),
+  }),
+  ...DATA_STRUCTURE_TOOLS,
+  ...TREE_TOOLS,
+  ...MATH_TOOLS,
 };
